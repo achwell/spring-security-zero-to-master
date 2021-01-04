@@ -5,6 +5,7 @@ import com.eazybytes.filter.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,11 +18,11 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ROLE_USER = "USER";
     private static final String ROLE_ADMIN = "ADMIN";
-    private static final String ROLE_ROOT = "ROOT";
 
     @Value("${h2.console.path:/h2-console}")
     String h2Console;
@@ -78,7 +79,7 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(AccountController.URL).hasRole(ROLE_USER)
                 .antMatchers(BalanceController.URL).hasAnyRole(ROLE_USER, ROLE_ADMIN)
-                .antMatchers(LoansController.URL).hasRole(ROLE_ROOT)
+                .antMatchers(LoansController.URL).hasAnyRole(ROLE_USER, ROLE_ADMIN)
                 .antMatchers(CardsController.URL).authenticated()
                 .antMatchers(LoginController.URL).authenticated()
                 .antMatchers(NoticesController.URL).permitAll()

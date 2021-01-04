@@ -3,6 +3,7 @@ package com.eazybytes.controller;
 import com.eazybytes.model.Customer;
 import com.eazybytes.model.Loans;
 import com.eazybytes.repository.LoanRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ public class LoansController {
 	}
 
 	@PostMapping(URL)
+	@PreAuthorize("#customer.email == authentication.principal")
 	public List<Loans> getLoanDetails(@RequestBody Customer customer) {
 		return loanRepository.findByCustomerIdOrderByStartDtDesc(customer.getId());
 	}
