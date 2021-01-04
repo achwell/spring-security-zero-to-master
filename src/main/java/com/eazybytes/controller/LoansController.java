@@ -1,16 +1,28 @@
 package com.eazybytes.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.eazybytes.model.Customer;
+import com.eazybytes.model.Loans;
+import com.eazybytes.repository.LoanRepository;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class LoansController {
 
 	public static final String URL = "/myLoans";
 
-	@GetMapping(URL)
-	public String getLoanDetails(String input) {
-		return "Here are the loan details from the DB";
+	private final LoanRepository loanRepository;
+
+	public LoansController(LoanRepository loanRepository) {
+		this.loanRepository = loanRepository;
+	}
+
+	@PostMapping(URL)
+	public List<Loans> getLoanDetails(@RequestBody Customer customer) {
+		return loanRepository.findByCustomerIdOrderByStartDtDesc(customer.getId());
 	}
 
 }

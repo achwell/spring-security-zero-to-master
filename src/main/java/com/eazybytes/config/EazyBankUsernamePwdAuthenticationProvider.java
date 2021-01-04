@@ -1,9 +1,7 @@
 package com.eazybytes.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import com.eazybytes.model.Customer;
+import com.eazybytes.repository.CustomerRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,8 +13,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.eazybytes.model.Customer;
-import com.eazybytes.repository.CustomerRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {

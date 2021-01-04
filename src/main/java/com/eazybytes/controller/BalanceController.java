@@ -1,16 +1,27 @@
 package com.eazybytes.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.eazybytes.model.AccountTransactions;
+import com.eazybytes.model.Customer;
+import com.eazybytes.repository.AccountTransactionsRepository;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class BalanceController {
 
 	public static final String URL = "/myBalance";
 
-	@GetMapping(URL)
-	public String getBalanceDetails(String input) {
-		return "Here are the balance details from the DB";
+	private final AccountTransactionsRepository accountTransactionsRepository;
+
+	public BalanceController(AccountTransactionsRepository accountTransactionsRepository) {
+		this.accountTransactionsRepository = accountTransactionsRepository;
 	}
 
+	@PostMapping(URL)
+	public List<AccountTransactions> getBalanceDetails(@RequestBody Customer customer) {
+		return accountTransactionsRepository.findByCustomerIdOrderByTransactionDtDesc(customer.getId());
+	}
 }

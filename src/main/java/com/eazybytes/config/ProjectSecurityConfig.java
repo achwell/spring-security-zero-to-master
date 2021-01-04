@@ -8,6 +8,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+
+import static java.util.Collections.singletonList;
 
 @Configuration
 public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -20,22 +24,33 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
      * /myBalance - Secured
      * /myLoans - Secured
      * /myCards - Secured
+     * /user - Secured
      * /notices - Not Secured
      * /contact - Not Secured
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.cors().configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(singletonList("http://localhost:4200"));
+            config.setAllowedMethods(singletonList("*"));
+            config.setAllowCredentials(true);
+            config.setAllowedHeaders(singletonList("*"));
+            config.setMaxAge(3600L);
+            return config;
+        })
+                .and().csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().csrf().ignoringAntMatchers(h2Console + "/**")
+                .and().authorizeRequests()
                 .antMatchers(AccountController.URL).authenticated()
                 .antMatchers(BalanceController.URL).authenticated()
                 .antMatchers(LoansController.URL).authenticated()
                 .antMatchers(CardsController.URL).authenticated()
+                .antMatchers(LoginController.URL).authenticated()
                 .antMatchers(NoticesController.URL).permitAll()
                 .antMatchers(ContactController.URL).permitAll()
                 .antMatchers(h2Console + "/**").permitAll()
-                .and().csrf().ignoringAntMatchers(h2Console + "/**")
                 .and().headers().frameOptions().sameOrigin()
-                .and().formLogin()
                 .and().httpBasic();
     }
 
