@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class AuthoritiesLoggingAtFilter implements Filter {
 
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthoritiesLoggingAtFilter.class);
 
 	@Override

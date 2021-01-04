@@ -18,7 +18,6 @@ public class AuthoritiesLoggingAfterFilter implements Filter {
 		if (null != authentication) {
 			LOGGER.info("User " + authentication.getName() + " is successfully authenticated and " + "has the authorities " + authentication.getAuthorities().toString());
 		}
-
 		chain.doFilter(request, response);
 	}
 

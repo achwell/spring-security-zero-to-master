@@ -27,3 +27,10 @@ spring:
         web-allow-others: true
     jpa:
       show-sql: true
+
+jwt:
+  expire:
+    timeout:
+      ms: 30000000
+  signing:
+    key: ymLTU8rq83j4fmJZj60wh4OrMNuntIj4fmJ
