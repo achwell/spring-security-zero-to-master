@@ -16,18 +16,13 @@ import static java.util.Collections.singletonList;
 @Configuration
 public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String ROLE_USER = "USER";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_ROOT = "ROOT";
+
     @Value("${h2.console.path:/h2-console}")
     String h2Console;
 
-    /**
-     * /myAccount - Secured
-     * /myBalance - Secured
-     * /myLoans - Secured
-     * /myCards - Secured
-     * /user - Secured
-     * /notices - Not Secured
-     * /contact - Not Secured
-     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(request -> {
@@ -42,9 +37,9 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().csrf().ignoringAntMatchers(h2Console + "/**")
                 .and().authorizeRequests()
-                .antMatchers(AccountController.URL).authenticated()
-                .antMatchers(BalanceController.URL).authenticated()
-                .antMatchers(LoansController.URL).authenticated()
+                .antMatchers(AccountController.URL).hasRole(ROLE_USER)
+                .antMatchers(BalanceController.URL).hasAnyRole(ROLE_USER,ROLE_ADMIN)
+                .antMatchers(LoansController.URL).hasRole(ROLE_ROOT)
                 .antMatchers(CardsController.URL).authenticated()
                 .antMatchers(LoginController.URL).authenticated()
                 .antMatchers(NoticesController.URL).permitAll()

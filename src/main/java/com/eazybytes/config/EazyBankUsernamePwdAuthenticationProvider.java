@@ -1,5 +1,6 @@
 package com.eazybytes.config;
 
+import com.eazybytes.model.Authority;
 import com.eazybytes.model.Customer;
 import com.eazybytes.repository.CustomerRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,9 +14,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
@@ -46,16 +50,15 @@ public class EazyBankUsernamePwdAuthenticationProvider implements Authentication
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
-        List<Customer> customer = customerRepository.findByEmail(username);
-        if (customer.size() > 0) {
-            if (passwordEncoder.matches(pwd, customer.get(0).getPwd())) {
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority(customer.get(0).getRole()));
-                return new UsernamePasswordAuthenticationToken(username, pwd, authorities);
+        List<Customer> customers = customerRepository.findByEmail(username);
+        if (customers.size() > 0) {
+            Customer customer = customers.get(0);
+            if (passwordEncoder.matches(pwd, customer.getPwd())) {
+                return new UsernamePasswordAuthenticationToken(username, pwd, getGrantedAuthorities(customer.getAuthorities()));
             } else {
                 throw new BadCredentialsException("Invalid password!");
             }
-        }else {
+        } else {
             throw new BadCredentialsException("No user registered with this details!");
         }
     }
@@ -84,4 +87,9 @@ public class EazyBankUsernamePwdAuthenticationProvider implements Authentication
     public boolean supports(Class<?> authentication) {
         return Objects.equals(authentication, UsernamePasswordAuthenticationToken.class);
     }
+
+    private List<GrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+        return authorities == null ? emptyList() : authorities.stream().map(authority -> new SimpleGrantedAuthority(authority.getName())).collect(toList());
+    }
+
 }

@@ -2,11 +2,10 @@ package com.eazybytes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.AUTO;
 
 @Entity
@@ -18,6 +17,7 @@ public class Customer {
 	private int id;
 
 	private String name;
+
 	private String email;
 
 	@Column(name = "mobile_number")
@@ -30,6 +30,10 @@ public class Customer {
 
 	@Column(name = "create_dt")
 	private String createDt;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "customer", fetch = EAGER)
+	private Set<Authority> authorities;
 
 	public int getId() {
 		return id;
@@ -86,4 +90,13 @@ public class Customer {
 	public void setCreateDt(String createDt) {
 		this.createDt = createDt;
 	}
+
+	public Set<Authority> getAuthorities() {
+		return authorities;
+	}
+
+	public void setAuthorities(Set<Authority> authorities) {
+		this.authorities = authorities;
+	}
+
 }

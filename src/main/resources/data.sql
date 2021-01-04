@@ -19,8 +19,8 @@ create TABLE users
 create TABLE authorities
 (
     id        int         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username  varchar(45) NOT NULL,
-    authority varchar(45) NOT NULL
+    customer_id  int NOT NULL,
+    name varchar(50) NOT NULL
 );
 
 create TABLE customer
@@ -42,8 +42,6 @@ create TABLE accounts (
   create_dt date DEFAULT NULL
 );
 
-alter table accounts add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
 create TABLE account_transactions (
   transaction_id varchar(200) NOT NULL PRIMARY KEY,
   account_number bigint NOT NULL,
@@ -56,9 +54,6 @@ create TABLE account_transactions (
   create_dt date DEFAULT NULL
 );
 
-alter table account_transactions add FOREIGN KEY (account_number) REFERENCES accounts(account_number);
-alter table account_transactions add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
 create TABLE loans (
   loan_number int NOT NULL PRIMARY KEY AUTO_INCREMENT,
   customer_id int NOT NULL,
@@ -70,8 +65,6 @@ create TABLE loans (
   create_dt date DEFAULT NULL
 );
 
-alter table loans add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
-
 create TABLE cards (
   card_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
   card_number varchar(100) NOT NULL,
@@ -82,8 +75,6 @@ create TABLE cards (
   available_amount int NOT NULL,
   create_dt date DEFAULT NULL
 );
-
-alter table cards add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
 
 create TABLE notice_details (
   notice_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -104,14 +95,21 @@ create TABLE contact_messages (
   create_dt date DEFAULT NULL
 );
 
+alter table authorities add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+alter table accounts add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+alter table account_transactions add FOREIGN KEY (account_number) REFERENCES accounts(account_number);
+alter table account_transactions add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+alter table loans add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+alter table cards add FOREIGN KEY (customer_id) REFERENCES customer(customer_id);
+
 insert into users (username, password, enabled)
 values ('happy', '12345', '1');
 
-insert into authorities (username, authority)
-values ('happy', 'write');
+insert into customer (customer_id, name, email, mobile_number, pwd, role, create_dt)
+ values (1, 'Happy','happy@example.com','9876548337', '$2a$10$kCGSajJz0.Gqo3toXVzD7umrqR2MR.YQmZFiNbQi/OmsQrG.r1cH6', 'admin', sysdate());
 
-insert into customer (name, email, mobile_number, pwd, role, create_dt)
- values ('Happy','happy@example.com','9876548337', '$2a$10$kCGSajJz0.Gqo3toXVzD7umrqR2MR.YQmZFiNbQi/OmsQrG.r1cH6', 'admin', sysdate());
+insert into authorities (id, customer_id, name) values (1, 1, 'ROLE_USER');
+insert into authorities (id, customer_id, name) values (2, 1, 'ROLE_ADMIN');
 
 insert into accounts (customer_id, account_number, account_type, branch_address, create_dt)
  values (1, 186576453434, 'Savings', '123 Main Street, New York', sysdate());
