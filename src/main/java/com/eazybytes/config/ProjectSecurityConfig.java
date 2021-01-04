@@ -1,6 +1,9 @@
 package com.eazybytes.config;
 
 import com.eazybytes.controller.*;
+import com.eazybytes.filter.AuthoritiesLoggingAfterFilter;
+import com.eazybytes.filter.AuthoritiesLoggingAtFilter;
+import com.eazybytes.filter.RequestValidationBeforeFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -36,7 +40,10 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
         })
                 .and().csrf().ignoringAntMatchers("/contact").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().csrf().ignoringAntMatchers(h2Console + "/**")
-                .and().authorizeRequests()
+                .and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthoritiesLoggingAtFilter(), BasicAuthenticationFilter.class)
+                .authorizeRequests()
                 .antMatchers(AccountController.URL).hasRole(ROLE_USER)
                 .antMatchers(BalanceController.URL).hasAnyRole(ROLE_USER,ROLE_ADMIN)
                 .antMatchers(LoansController.URL).hasRole(ROLE_ROOT)
