@@ -12,25 +12,10 @@ management:
         include: '*'
 
 spring:
-  data:
-    jpa:
-      repositories:
-        bootstrap-mode: default
-  datasource:
-    url: jdbc:h2:mem:testdb
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        trace: true
-        web-allow-others: true
-    jpa:
-      show-sql: true
-
-jwt:
-  expire:
-    timeout:
-      ms: 30000000
-  signing:
-    key: ymLTU8rq83j4fmJZj60wh4OrMNuntIj4fmJ
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: b348c72d10416e90b346
+            clientSecret: 912cb93d0a7a00af77abe1fe3972a6da0eb9a5e7
